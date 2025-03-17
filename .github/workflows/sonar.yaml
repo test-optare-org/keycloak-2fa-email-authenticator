@@ -20,12 +20,18 @@ jobs:
 
     - name: Build con Maven
       run: mvn -B package --file pom.xml
+
+    - name: Extraer variables de `pom.xml` con xmlstarlet
+      run: |
+        SONAR_PROJECT_NAME=$(xmlstarlet sel -t -v "//project/artifactId" pom.xml)
+        SONAR_PROJECT_KEY=$(xmlstarlet sel -t -v "//project/artifactId" pom.xml)-$(xmlstarlet sel -t -v "//project/version" pom.xml)
+        
+        echo "SONAR_PROJECT_NAME=$SONAR_PROJECT_NAME" >> $GITHUB_ENV
+        echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY" >> $GITHUB_ENV
       
     - name: Escaneo con SonarQube
       env:
         SONAR_HOST: "http://localhost:9000"
-        SONAR_PROJECT_NAME: "my-sonar-project"
-        SONAR_PROJECT_KEY: "my-sonar-project"
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         mvn sonar:sonar \
