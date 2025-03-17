@@ -23,8 +23,8 @@ jobs:
 
     - name: Extraer variables de `pom.xml` con xmllint
       run: |
-        SONAR_PROJECT_NAME=$(xmllint sel -t -v "//project/artifactId" pom.xml)
-        SONAR_PROJECT_KEY=$(xmllint sel -t -v "//project/artifactId" pom.xml)-$(xmllint sel -t -v "//project/version" pom.xml)
+        SONAR_PROJECT_NAME=$(sed -n 's:.*<artifactId>\(.*\)</artifactId>.*:\1:p' pom.xml | head -1)
+        SONAR_PROJECT_KEY="${SONAR_PROJECT_NAME}-$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | head -1)"
         
         echo "SONAR_PROJECT_NAME=$SONAR_PROJECT_NAME" >> $GITHUB_ENV
         echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY" >> $GITHUB_ENV
